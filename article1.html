@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaveBot Blog - O que é um chatbot?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variáveis CSS (copiadas do blog.html para consistência) */
+        :root {
+            --primary-color: #ffd700; /* Amarelo Dourado */
+            --secondary-color: #00bfff; /* Azul Céu Profundo */
+            --accent-color: #ff4500; /* Laranja Vermelho */
+            --dark-color: #1A1A1A;
+            --darker-color: #0A0A0A;
+            --light-color: #f0f2f5;
+            --gray-color: #d1d5db;
+            --dark-gray: #6b7280;
+            --text-dark: #2c3e50;
+            --text-light: #ecf0f1;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --border-radius-sm: 10px;
+            --transition-speed: 0.3s;
+            font-size: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .blog-article-full {
+            text-align: left;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1000px;
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .blog-article-full h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .blog-article-full h2 {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .blog-article-full p, .blog-article-full ul {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .blog-article-full ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+
+        .blog-article-full li {
+            margin-bottom: 5px;
+        }
+
+        .back-to-blog-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            padding: 0.5rem 0.9375rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            margin-top: 1.25rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3125rem;
+            box-shadow: var(--shadow);
+            text-decoration: none; /* Para o link */
+        }
+
+        .back-to-blog-btn:hover {
+            background-color: #0099cc;
+            transform: translateY(-0.1875rem);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Dark Mode (simplificado para este arquivo) */
+        body.dark-mode {
+            --light-color: #0A0A0A;
+            --text-dark: #ecf0f1;
+            --gray-color: #34495e;
+            --dark-gray: #95a5a6;
+            --dark-color: #1A1A1A;
+            --darker-color: #0A0A0A;
+        }
+
+        .dark-mode .blog-article-full {
+            background-color: #1e1e1e;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <div id="article1" class="blog-article-full">
+        <h1>O que é um chatbot e para que serve?</h1>
+        <h2>Introdução</h2>
+        <p>Nos últimos anos, os chatbots se tornaram cada vez mais presentes em nosso cotidiano, aparecendo em sites, aplicativos e redes sociais. A palavra “chatbot” combina “chat” (conversação) com “bot” (robô): trata-se de um programa criado para simular diálogos humanos. Existem chatbots simples, que seguem scripts fixos, e sistemas mais avançados que utilizam inteligência artificial para entender contexto, intenção e fornecer respostas naturais.</p>
+        
+        <h2>Para que servem os chatbots?</h2>
+        <ul>
+            <li>**Atendimento ao Cliente:** Respondem a perguntas frequentes, resolvem problemas simples e direcionam usuários para o setor correto, 24 horas por dia, 7 dias por semana.</li>
+            <li>**Vendas e Marketing:** Auxiliam na qualificação de leads, oferecem recomendações de produtos e facilitam o processo de compra.</li>
+            <li>**Suporte Interno:** Ajudam funcionários a encontrar informações, acessar sistemas e resolver dúvidas sobre políticas da empresa.</li>
+            <li>**Educação:** Podem ser usados para tirar dúvidas de alunos, fornecer materiais de estudo e até mesmo simular conversas para prática de idiomas.</li>
+            <li>**Entretenimento:** Chatbots de conversação ou jogos interativos.</li>
+            <li>**Assistentes Pessoais:** Como o SaveBot, ajudam na organização de tarefas, lembretes, resumos e geração de conteúdo.</li>
+        </ul>
+        
+        <h2>Como funcionam?</h2>
+        <p>A maioria dos chatbots opera de duas formas principais:</p>
+        <ul>
+            <li>**Baseados em Regras:** Seguem um fluxo de conversa pré-definido. O usuário escolhe entre opções e o chatbot responde com base nessas escolhas. São mais simples e previsíveis.</li>
+            <li>**Com Inteligência Artificial (IA):** Utilizam Processamento de Linguagem Natural (PLN) e Machine Learning para entender a intenção do usuário, mesmo com variações na linguagem. Eles aprendem com cada interação, tornando-se mais eficientes e "inteligentes" ao longo do tempo.</li>
+        </ul>
+        <p>Em resumo, os chatbots são uma ponte entre humanos e sistemas digitais, otimizando a comunicação e automatizando tarefas repetitivas, liberando tempo para interações mais complexas e estratégicas.</p>
+        <a href="../blog.html" class="back-to-blog-btn"><i class="fas fa-arrow-left"></i> Voltar ao Blog</a>
+    </div>
+
+    <script>
+        function applyDarkMode() {
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', applyDarkMode);
+    </script>
+</body>
+</html>

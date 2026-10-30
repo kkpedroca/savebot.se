@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carregando...</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
+            color: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .loading-container {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        .loading-spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #ffd700;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.5s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffd700;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingContainer = document.querySelector('.loading-container');
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+
+            function fadeOutAndRedirect(url, delay = 500) {
+                loadingContainer.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => {
+                    window.location.replace(url);
+                }, delay);
+            }
+
+            if (redirectUrl) {
+                // Pequeno atraso para garantir que o spinner seja visível antes do fadeOut
+                setTimeout(() => {
+                    fadeOutAndRedirect(decodeURIComponent(redirectUrl));
+                }, 500); // Atraso de 0.5s antes de iniciar o fadeOut e redirecionar
+            } else {
+                // Fallback caso não haja URL de redirecionamento (pode ser ajustado)
+                setTimeout(() => {
+                    fadeOutAndRedirect('index.html');
+                }, 1000);
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Carregando...</div>
+    </div>
+</body>
+</html>

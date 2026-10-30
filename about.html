@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre o SaveBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Inclua aqui o CSS relevante do seu index.html para as seções de conteúdo */
+        :root {
+            --primary-color: #ffd700; /* Amarelo Dourado */
+            --secondary-color: #00bfff; /* Azul Céu Profundo */
+            --accent-color: #ff4500; /* Laranja Vermelho */
+            --dark-color: #1A1A1A; /* NOVO: Preto um pouco mais claro para barra lateral e superior */
+            --darker-color: #0A0A0A; /* NOVO: Preto mais profundo para o fundo do login e chat */
+            --light-color: #f0f2f5; /* Cinza Claro Suave */
+            --gray-color: #d1d5db; /* Cinza Médio */
+            --dark-gray: #6b7280; /* Cinza Escuro */
+            --text-dark: #2c3e50; /* Azul Escuro para Texto */
+            --text-light: #ecf0f1; /* Cinza Claro para Texto */
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --border-radius-sm: 10px;
+            --transition-speed: 0.3s;
+            font-size: 16px; /* Base font size for rem units */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .content-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 1.25rem; /* 2rem */
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--light-color);
+            color: var(--text-dark);
+            text-align: center;
+            padding-top: 1.25rem; /* Adjusted for standalone page */
+            height: 100vh;
+        }
+
+        .content-section-inner {
+            max-width: 62.5rem; /* 1000px */
+            width: 100%;
+            background-color: white;
+            padding: 2.5rem; /* 4rem */
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            text-align: left;
+            margin-bottom: 1.25rem; /* 2rem */
+        }
+
+        .content-section h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.9375rem; /* 1.5rem */
+            text-align: center;
+        }
+
+        .content-section h2 {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            margin-top: 1.25rem; /* 2rem */
+            margin-bottom: 0.625rem; /* 1rem */
+        }
+
+        .content-section p, .content-section ul {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 0.625rem; /* 1rem */
+        }
+
+        .content-section ul {
+            list-style-type: disc;
+            margin-left: 1.25rem; /* 20px */
+        }
+
+        .content-section li {
+            margin-bottom: 0.3125rem; /* 5px */
+        }
+
+        .back-to-chat-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            padding: 0.5rem 0.9375rem; /* 8px 15px */
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            margin-top: 1.25rem; /* 2rem */
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3125rem; /* 5px */
+            box-shadow: var(--shadow);
+        }
+
+        .back-to-chat-btn:hover {
+            background-color: #0099cc;
+            transform: translateY(-0.1875rem); /* -3px */
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Dark Mode styles for this section */
+        .dark-mode {
+            --light-color: #0A0A0A;
+            --text-dark: #ecf0f1;
+            --gray-color: #34495e;
+            --dark-gray: #95a5a6;
+            --dark-color: #1A1A1A;
+            --darker-color: #0A0A0A;
+        }
+
+        .dark-mode .content-section-inner {
+            background-color: #1e1e1e;
+            color: var(--text-light);
+        }
+
+        /* Responsividade */
+        @media (max-width: 48em) { /* 768px */
+            .content-section {
+                padding: 0.625rem; /* 1rem */
+            }
+            .content-section-inner {
+                padding: 0.9375rem; /* 1.5rem */
+            }
+            .content-section h1 {
+                font-size: 2rem;
+            }
+            .content-section h2 {
+                font-size: 1.5rem;
+            }
+            .content-section p, .content-section ul {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <script>
+        // Função para aplicar o modo escuro se estiver salvo no localStorage
+        function applyDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', applyDarkMode);
+
+        function showLoadingAndRedirect(url) {
+            document.body.innerHTML = `
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%); color: #f0f2f5; font-family: 'Inter', sans-serif;">
+                    <div style="border: 8px solid rgba(255, 255, 255, 0.3); border-top: 8px solid #ffd700; border-radius: 50%; width: 60px; height: 60px; animation: spin 1.5s linear infinite; margin: 0 auto 20px auto;"></div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: #ffd700;">Carregando...</div>
+                </div>
+                <style>
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            `;
+            window.location.href = url;
+        }
+    </script>
+</head>
+<body>
+    <section id="aboutSection" class="content-section">
+        <div class="content-section-inner">
+            <h1>Sobre o SaveBot</h1>
+            <p>Bem-vindo ao SaveBot, seu assistente pessoal inteligente projetado para simplificar sua vida digital! Nosso objetivo é oferecer uma experiência de usuário intuitiva e poderosa, combinando as mais recentes tecnologias de inteligência artificial com funcionalidades práticas para o seu dia a dia.</p>
+            
+            <h2>O que o SaveBot pode fazer por você?</h2>
+            <ul>
+                <li>**Organização Inteligente:** Agende lembretes, gerencie tarefas e mantenha seu calendário em ordem com comandos simples.</li>
+                <li>**Análise de Documentos:** Resuma PDFs, documentos de texto e links da web, extraindo as informações mais importantes para você.</li>
+                <li>**Geração de Conteúdo:** Precisa de um e-mail, um post para redes sociais ou um texto criativo? O SaveBot pode gerar conteúdo personalizado em segundos.</li>
+                <li>**Aprendizado Contínuo:** Quanto mais você interage, mais o SaveBot aprende sobre suas preferências e se adapta para oferecer respostas e sugestões cada vez mais relevantes.</li>
+                <li>**Interação Multimodal:** Converse por texto, voz e anexe arquivos para uma comunicação rica e eficiente.</li>
+            </ul>
+            
+            <p>Estamos constantemente trabalhando para aprimorar o SaveBot, adicionando novas funcionalidades e garantindo que sua experiência seja a melhor possível. Sua privacidade e segurança são nossas prioridades.</p>
+            <button class="back-to-chat-btn" onclick="showLoadingAndRedirect('index.html')"><i class="fas fa-arrow-left"></i> Voltar ao Chat</button>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog do SaveBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Inclua aqui o CSS relevante do seu index.html para as seções de conteúdo e blog */
+        :root {
+            --primary-color: #ffd700; /* Amarelo Dourado */
+            --secondary-color: #00bfff; /* Azul Céu Profundo */
+            --accent-color: #ff4500; /* Laranja Vermelho */
+            --dark-color: #1A1A1A; /* NOVO: Preto um pouco mais claro para barra lateral e superior */
+            --darker-color: #0A0A0A; /* NOVO: Preto mais profundo para o fundo do login e chat */
+            --light-color: #f0f2f5; /* Cinza Claro Suave */
+            --gray-color: #d1d5db; /* Cinza Médio */
+            --dark-gray: #6b7280; /* Cinza Escuro */
+            --text-dark: #2c3e50; /* Azul Escuro para Texto */
+            --text-light: #ecf0f1; /* Cinza Claro para Texto */
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --border-radius-sm: 10px;
+            --transition-speed: 0.3s;
+            font-size: 16px; /* Base font size for rem units */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .blog-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 1.25rem; /* 2rem */
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--light-color);
+            color: var(--text-dark);
+            text-align: center;
+            padding-top: 1.25rem; /* Adjusted for standalone page */
+            height: 100vh;
+        }
+
+        .blog-container {
+            max-width: 62.5rem; /* 1000px */
+            width: 100%;
+            background-color: white;
+            padding: 1.875rem; /* 3rem */
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            text-align: left;
+            margin-bottom: 1.25rem; /* 2rem */
+            position: relative; /* For absolute positioning of back button */
+        }
+
+        .blog-header {
+            text-align: center;
+            margin-bottom: 1.5625rem; /* 2.5rem */
+        }
+
+        .blog-header h1 {
+            font-size: 2.8rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem; /* 0.8rem */
+            font-weight: 700;
+        }
+
+        .blog-header p {
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr)); /* 300px */
+            gap: 1.25rem; /* 2rem */
+        }
+
+        .blog-article-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius-sm);
+            padding: 0.9375rem; /* 1.5rem */
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            border: 0.0625rem solid var(--gray-color); /* 1px */
+        }
+
+        .blog-article-card:hover {
+            transform: translateY(-0.3125rem); /* -5px */
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .blog-article-card h2 {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem; /* 0.8rem */
+            font-weight: 600;
+        }
+
+        .blog-article-card h3 {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            margin-top: 0.3125rem; /* 5px */
+            margin-bottom: 0.3125rem; /* 5px */
+            font-weight: 500;
+        }
+
+        .blog-article-card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem; /* 1rem */
+            flex-grow: 1;
+        }
+
+        .blog-article-card .read-more-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            padding: 0.375rem 0.75rem; /* 6px 12px */
+            border-radius: var(--border-radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            align-self: flex-start;
+        }
+
+        .blog-article-card .read-more-btn:hover {
+            background-color: #ffcc00;
+            transform: translateY(-0.125rem); /* -2px */
+        }
+
+        .back-to-chat-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            padding: 0.5rem 0.9375rem; /* 8px 15px */
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            margin-top: 1.25rem; /* 2rem */
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3125rem; /* 5px */
+            box-shadow: var(--shadow);
+        }
+
+        .back-to-chat-btn:hover {
+            background-color: #0099cc;
+            transform: translateY(-0.1875rem); /* -3px */
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Dark Mode styles for this section */
+        .dark-mode {
+            --light-color: #0A0A0A;
+            --text-dark: #ecf0f1;
+            --gray-color: #34495e;
+            --dark-gray: #95a5a6;
+            --dark-color: #1A1A1A;
+            --darker-color: #0A0A0A;
+        }
+
+        .dark-mode .blog-container {
+            background-color: #1e1e1e;
+            color: var(--text-light);
+        }
+
+        .dark-mode .blog-article-card {
+            background-color: #34495e;
+            border-color: #4a627a;
+        }
+
+        .dark-mode .blog-article-card p {
+            color: var(--text-light);
+        }
+
+        /* Responsividade */
+        @media (max-width: 48em) { /* 768px */
+            .blog-section {
+                padding: 0.625rem; /* 1rem */
+            }
+            .blog-container {
+                padding: 0.9375rem; /* 1.5rem */
+                margin-top: 0.625rem; /* 1rem */
+                margin-bottom: 0.625rem; /* 1rem */
+            }
+            .blog-header h1 {
+                font-size: 2rem;
+            }
+            .blog-header p {
+                font-size: 1rem;
+            }
+            .blog-grid {
+                grid-template-columns: 1fr;
+                gap: 0.9375rem; /* 1.5rem */
+            }
+            .blog-article-card h2 {
+                font-size: 1.3rem;
+            }
+            .blog-article-card h3 {
+                font-size: 1rem;
+            }
+            .blog-article-card p {
+                font-size: 0.9rem;
+            }
+            .blog-article-card .read-more-btn {
+                padding: 0.3125rem 0.625rem; /* 5px 10px */
+                font-size: 0.9rem;
+            }
+            .blog-container .back-to-chat-btn {
+                position: static;
+                margin-top: 1.25rem;
+            }
+        }
+    </style>
+    <script>
+        function applyDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', applyDarkMode);
+
+        function showLoadingAndRedirect(url) {
+            document.body.innerHTML = `
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%); color: #f0f2f5; font-family: 'Inter', sans-serif;">
+                    <div style="border: 8px solid rgba(255, 255, 255, 0.3); border-top: 8px solid #ffd700; border-radius: 50%; width: 60px; height: 60px; animation: spin 1.5s linear infinite; margin: 0 auto 20px auto;"></div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: #ffd700;">Carregando...</div>
+                </div>
+                <style>
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            `;
+            window.location.href = url;
+        }
+    </script>
+</head>
+<body>
+    <section id="blogSection" class="blog-section">
+        <div class="blog-container">
+            <button class="back-to-chat-btn" style="position: absolute; top: 1.25rem; left: 1.25rem;" onclick="showLoadingAndRedirect('index.html')">
+                <i class="fas fa-arrow-left"></i> Voltar ao Chat
+            </button>
+            <div class="blog-header">
+                <h1>Blog do SaveBot</h1>
+                <p>Dicas, novidades e artigos sobre assistentes digitais, inteligência artificial e produtividade.</p>
+            </div>
+            <div id="blogGrid" class="blog-grid">
+                <!-- Artigo 1 -->
+                <div class="blog-article-card" data-article-id="article1">
+                    <div>
+                        <h2>O que é um chatbot e para que serve?</h2>
+                        <h3>Introdução</h3>
+                        <p>Nos últimos anos, os chatbots se tornaram cada vez mais presentes em nosso cotidiano, aparecendo em sites, aplicativos e redes sociais. A palavra “chatbot” combina “chat” (conversa) com “bot” (robô): trata-se de um programa criado para simular diálogos humanos. Existem chatbots simples, que seguem scripts fixos, e sistemas mais avançados que utilizam inteligência artificial para entender contexto, intenção e fornecer respostas naturais.</p>
+                    </div>
+                    <a href="blog-articles/article1.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article1.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 2 -->
+                <div class="blog-article-card" data-article-id="article2">
+                    <div>
+                        <h2>Como a inteligência artificial está mudando a rotina das pessoas</h2>
+                        <h3>Introdução</h3>
+                        <p>A inteligência artificial (IA) deixou de ser um tema de ficção científica para integrar funções do cotidiano. De recomendações personalizadas em serviços de streaming a assistentes de voz que controlam aparelhos domésticos, a IA transforma experiências pessoais e profissionais, acelerando processos e moldando novos hábitos.</p>
+                    </div>
+                    <a href="blog-articles/article2.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article2.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 3 -->
+                <div class="blog-article-card" data-article-id="article3">
+                    <div>
+                        <h2>Diferença entre um chatbot simples e um chatbot com IA</h2>
+                        <h3>Introdução</h3>
+                        <p>Nem todo chatbot é igual: existe uma linha clara entre sistemas baseados em regras e chatbots dotados de inteligência artificial. Entender essa diferença ajuda a escolher a solução adequada para cada necessidade.</p>
+                    </div>
+                    <a href="blog-articles/article3.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article3.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 4 -->
+                <div class="blog-article-card" data-article-id="article4">
+                    <div>
+                        <h2>Quais as vantagens de usar um assistente pessoal digital?</h2>
+                        <h3>Introdução</h3>
+                        <p>Assistentes pessoais digitais reúnem funcionalidades que vão de lembretes e organização de tarefas até a geração de conteúdo. Eles funcionam como secretários virtuais, disponíveis a qualquer hora e capazes de integrar informações de múltiplas fontes.</p>
+                    </div>
+                    <a href="blog-articles/article4.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article4.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 5 -->
+                <div class="blog-article-card" data-article-id="article5">
+                    <div>
+                        <h2>IA pode substituir os humanos no trabalho?</h2>
+                        <h3>Introdução</h3>
+                        <p>O uso expandido de IA levanta a questão: ela vai substituir trabalhadores humanos? A resposta é complexa e depende do contexto, setor e tarefa específica.</p>
+                    </div>
+                    <a href="blog-articles/article5.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article5.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 6 -->
+                <div class="blog-article-card" data-article-id="article6">
+                    <div>
+                        <h2>Como a IA ajuda nos estudos</h2>
+                        <h3>Introdução</h3>
+                        <p>Ferramentas baseadas em IA têm revolucionado a forma como estudantes aprendem, oferecendo recursos que vão do suporte imediato a explicações ao auxílio na organização do estudo.</p>
+                    </div>
+                    <a href="blog-articles/article6.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article6.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 7 -->
+                <div class="blog-article-card" data-article-id="article7">
+                    <div>
+                        <h2>A IA pode ajudar pequenas empresas?</h2>
+                        <h3>Introdução</h3>
+                        <p>Pequenas empresas podem se beneficiar muito com a aplicação de IA, mesmo com orçamentos limitados. Ferramentas acessíveis colocam automação e insights antes disponíveis apenas para grandes corporações.</p>
+                    </div>
+                    <a href="blog-articles/article7.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article7.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 8 -->
+                <div class="blog-article-card" data-article-id="article8">
+                    <div>
+                        <h2>O que é o SaveBot e como funciona?</h2>
+                        <h3>Introdução</h3>
+                        <p>O SaveBot é um assistente pessoal baseado em inteligência artificial, projetado para ajudar em tarefas do dia a dia, como organizar compromissos, gerar textos e resumir informações. Ele funciona via navegador, integrando recursos que tornam a rotina mais prática.</p>
+                    </div>
+                    <a href="blog-articles/article8.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article8.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 9 -->
+                <div class="blog-article-card" data-article-id="article9">
+                    <div>
+                        <h2>Quais cuidados devo ter ao usar inteligência artificial?</h2>
+                        <h3>Introdução</h3>
+                        <p>Apesar das vantagens, o uso de IA exige cuidados. Entender riscos e limites ajuda a utilizar a tecnologia com segurança e eficácia.</p>
+                    </div>
+                    <a href="blog-articles/article9.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article9.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 10 -->
+                <div class="blog-article-card" data-article-id="article10">
+                    <div>
+                        <h2>IA pode ajudar no dia a dia de quem trabalha em home office?</h2>
+                        <h3>Introdução</h3>
+                        <p>O home office exige disciplina e organização; a IA oferece suporte nessas frentes com ferramentas que auxiliam no tempo e na rotina de trabalho remoto.</p>
+                    </div>
+                    <a href="blog-articles/article10.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article10.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 11 -->
+                <div class="blog-article-card" data-article-id="article11">
+                    <div>
+                        <h2>A inteligência artificial pode ser criativa?</h2>
+                        <h3>Introdução</h3>
+                        <p>A criatividade é vista como traço tipicamente humano. No entanto, modelos de IA têm demonstrado capacidade de gerar textos, imagens e músicas que surpreendem pela originalidade.</p>
+                    </div>
+                    <a href="blog-articles/article11.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article11.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 12 -->
+                <div class="blog-article-card" data-article-id="article12">
+                    <div>
+                        <h2>IA é confiável para responder perguntas?</h2>
+                        <h3>Introdução</h3>
+                        <p>Modelos de IA respondem com rapidez e conveniência, mas confiabilidade depende do modelo, do contexto e da qualidade dos dados de treino.</p>
+                    </div>
+                    <a href="blog-articles/article12.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article12.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 13 -->
+                <div class="blog-article-card" data-article-id="article13">
+                    <div>
+                        <h2>Como a IA impacta a educação?</h2>
+                        <h3>Introdução</h3>
+                        <p>A IA transforma práticas educativas ao oferecer personalização, automação de tarefas e ferramentas de avaliação que acompanham o progresso dos alunos.</p>
+                    </div>
+                    <a href="blog-articles/article13.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article13.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 14 -->
+                <div class="blog-article-card" data-article-id="article14">
+                    <div>
+                        <h2>IA pode ajudar na saúde?</h2>
+                        <h3>Introdução</h3>
+                        <p>A IA avança em aplicações na saúde, auxiliando em diagnóstico, monitoramento e gestão de dados clínicos. Ela não substitui médicos, mas potencializa decisões com dados e padrões que seriam difíceis de identificar manualmente.</p>
+                    </div>
+                    <a href="blog-articles/article14.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article14.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 15 -->
+                <div class="blog-article-card" data-article-id="article15">
+                    <div>
+                        <h2>Como usar IA para melhorar a produtividade?</h2>
+                        <h3>Introdução</h3>
+                        <p>IA oferece soluções práticas para reduzir tarefas repetitivas e otimizar processos, liberando tempo para atividades estratégicas.</p>
+                    </div>
+                    <a href="blog-articles/article15.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article15.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 16 -->
+                <div class="blog-article-card" data-article-id="article16">
+                    <div>
+                        <h2>Qual o futuro dos chatbots?</h2>
+                        <h3>Introdução</h3>
+                        <p>Chatbots evoluem rapidamente, e o futuro aponta para interações mais naturais, integração multimodal e presença em diversos dispositivos.</p>
+                    </div>
+                    <a href="blog-articles/article16.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article16.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 17 -->
+                <div class="blog-article-card" data-article-id="article17">
+                    <div>
+                        <h2>O SaveBot pode substituir outros aplicativos do dia a dia?</h2>
+                        <h3>Introdução</h3>
+                        <p>O SaveBot reúne várias funções — agenda, notas, resumo de textos e geração de conteúdo — que, juntas, reduzem a necessidade de múltiplos aplicativos.</p>
+                    </div>
+                    <a href="blog-articles/article17.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article17.html');">Leia Mais</a>
+                </div>
+                <!-- Artigo 18 -->
+                <div class="blog-article-card" data-article-id="article18">
+                    <div>
+                        <h2>Dicas para otimizar o uso do SaveBot</h2>
+                        <h3>Introdução</h3>
+                        <p>Usar o SaveBot de forma eficiente depende de pequenas práticas que aumentam a utilidade do assistente no dia a dia.</p>
+                    </div>
+                    <a href="blog-articles/article18.html" class="read-more-btn" onclick="event.preventDefault(); showLoadingAndRedirect('blog-articles/article18.html');">Leia Mais</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -21,18 +21,18 @@
       // Importar as funções necessárias dos SDKs do Firebase
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
       // MODIFICAÇÃO: Adicionado setPersistence, browserLocalPersistence
-      import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, signInAnonymously, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"; 
+      import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"; 
       import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, orderBy, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
       // Sua configuração do projeto Firebase (SUBSTITUA ESTES VALORES PELOS SEUS!)
       const firebaseConfig = {
-        apiKey: "AIzaSyBP1314aqJZh2ufoseiyqQzK40GMrTjiv4",
+        apiKey: "AIzaSyD2ygGNKpPoJ1Ag5F_9rNGs6mVgh8MP8Aw", // API Key fornecida
         authDomain: "savebot-v1.firebaseapp.com",
         projectId: "savebot-v1",
         storageBucket: "savebot-v1.appspot.com",
         messagingSenderId: "567082778151",
         appId: "1:567082778151:web:18e3ae7a5b1a39982c1802",
-        measurementId: "G-HNJG1KD7RQ"
+        measurementId: "YOUR_MEASUREMENT_ID" // Opcional, se usar Analytics (preencha se for usar)
       };
 
       // Inicializar o Firebase
@@ -56,8 +56,9 @@
       // TODO: TODO O SEU CÓDIGO JAVASCRIPT FOI MOVIDO PARA DENTRO DESTE BLOCO
       // Isso garante que todas as funções e instâncias do Firebase estejam disponíveis
       // antes que a lógica do seu aplicativo seja executada.
-      // Backend próprio hospedado no Render.
-      const API_ENDPOINT = '/api/generateContent';
+
+      // Configuração do Worker (Conceitual - para backend)
+      const WORKER_URL = 'https://savebot.pedrogt998.workers.dev/'; // Usado para simular chamadas de backend
       
       // Elementos DOM
       const loginContainer = document.getElementById('loginContainer');
@@ -67,7 +68,8 @@
       const nicknameInput = document.getElementById('nicknameInput'); // NOVO: Campo de apelido
       const loginButton = document.getElementById('loginButton');
       const showRegister = document.getElementById('showRegister');
-      const guestLoginButton = document.getElementById('guestLoginButton'); // NOVO: Botão de login de visitante
+      const guestLoginButton = document.getElementById('guestLoginButton'); // Botão de login de visitante
+      const googleLoginButton = document.getElementById('googleLoginButton'); // Login com Google
       const logoutBtn = document.getElementById('logoutBtn');
       const userAvatar = document.getElementById('userAvatar');
       const usernameDisplay = document.getElementById('usernameDisplay'); // Agora exibirá o apelido
@@ -284,6 +286,28 @@
           }
       }
 
+      // Login com conta Google (Gmail) pelo Firebase Authentication
+      async function handleGoogleLogin() {
+          try {
+              const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : true;
+              await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+
+              const provider = new GoogleAuthProvider();
+              provider.setCustomParameters({ prompt: 'select_account' });
+              await signInWithPopup(auth, provider);
+              showNotification('Login com Google realizado com sucesso!', 'success');
+              // onAuthStateChanged atualiza a interface e carrega o perfil/histórico.
+          } catch (error) {
+              if (error.code === 'auth/popup-closed-by-user') {
+                  showNotification('A janela de login do Google foi fechada.', 'info');
+                  return;
+              }
+              if (error.code === 'auth/cancelled-popup-request') return;
+              showNotification(`Erro ao entrar com Google: ${error.message}`, 'error', 5000);
+              console.error('Erro de login com Google:', error);
+          }
+      }
+
       async function handleGuestLogin() { // NOVO: Função para login de visitante
           try {
               // MODIFICAÇÃO: Login de visitante não persiste por padrão, usa sessão
@@ -310,6 +334,7 @@
               nicknameInput.style.display = 'block'; // Mostra o campo de apelido
               nicknameInput.setAttribute('required', 'true'); // Torna o apelido obrigatório para registro
               guestLoginButton.style.display = 'none'; // Esconde o botão de visitante ao registrar
+              googleLoginButton.style.display = 'none'; // Esconde o login Google durante o registro
               // MODIFICAÇÃO: Esconde o checkbox "Manter-me conectado" ao registrar (opcional, pode manter)
               if (rememberMeCheckbox) {
                   rememberMeCheckbox.parentElement.style.display = 'none';
@@ -320,6 +345,7 @@
               nicknameInput.style.display = 'none'; // Esconde o campo de apelido
               nicknameInput.removeAttribute('required');
               guestLoginButton.style.display = 'block'; // Mostra o botão de visitante ao voltar para login
+              googleLoginButton.style.display = 'flex'; // Mostra o login Google ao voltar para login
               // MODIFICAÇÃO: Mostra o checkbox "Manter-me conectado" ao voltar para login
               if (rememberMeCheckbox) {
                   rememberMeCheckbox.parentElement.style.display = 'block';
@@ -338,6 +364,7 @@
 
       // NOVO: Event listener para o botão de login de visitante
       guestLoginButton.addEventListener('click', handleGuestLogin);
+      googleLoginButton.addEventListener('click', handleGoogleLogin);
 
       // Event Listeners (mantidos)
       logoutBtn.addEventListener('click', handleLogout);
@@ -759,7 +786,7 @@
 
           try {
               // Gemini é chamado pelo Cloudflare Worker; a chave fica como Secret no backend.
-              const endpoint = API_ENDPOINT;
+              const endpoint = `${WORKER_URL}api/generateContent`;
 
               // Preparar histórico para a API Gemini
               const currentChatHistoryForAPI = messages.map(msg => {
@@ -786,25 +813,55 @@
                   }
               });
 
-              // Todas as mensagens passam pelo backend seguro do Render.
-              const response = await fetch(endpoint, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                      contents: currentChatHistoryForAPI,
-                      generationConfig: {
-                          temperature: 0.7,
-                          topK: 40,
-                          topP: 0.95,
-                          maxOutputTokens: 2048
-                      }
-                  })
-              });
-              const data = await response.json().catch(() => ({}));
-              if (!response.ok) {
-                  throw new Error(data.error || `Erro no servidor: ${response.status}`);
+              // Simulação de processamento de funcionalidades avançadas via backend
+              let botResponse = '';
+              let handledByAdvancedFeature = false;
+
+              // 1. Calendário e Lembretes (Funcionalidade 1)
+              if (messageText.toLowerCase().includes('agendar') || messageText.toLowerCase().includes('lembrar')) {
+                  botResponse = await simulateBackendCall('calendar_reminder', { message: messageText, userProfile: userProfile }); // Usar userProfile
+                  handledByAdvancedFeature = true;
+              } 
+              // 3. Resumo e Análise de Documentos/Links (Funcionalidade 3)
+              else if (attachedMedia.length > 0 && attachedMedia.some(m => m.type.includes('pdf') || m.type.includes('word') || m.type.includes('text')) || messageText.toLowerCase().includes('resumir link')) {
+                  botResponse = await simulateBackendCall('document_analysis', { message: messageText, media: mediaContent, userProfile: userProfile }); // Usar userProfile
+                  handledByAdvancedFeature = true;
               }
-              const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta da API.';
+              // 4. Geração de Conteúdo Personalizado (Funcionalidade 4)
+              else if (messageText.toLowerCase().includes('escrever e-mail') || messageText.toLowerCase().includes('gerar post') || messageText.toLowerCase().includes('criar texto')) {
+                  botResponse = await simulateBackendCall('content_generation', { message: messageText, userProfile: userProfile }); // Usar userProfile
+                  handledByAdvancedFeature = true;
+              }
+              // 5. Aprendizado Contínuo e Personalização Profunda (Implícito na resposta)
+              // O backend usaria userProfile e histórico para adaptar a resposta.
+
+              if (!handledByAdvancedFeature) {
+                  // Chamada padrão para Gemini se nenhuma funcionalidade avançada for acionada
+                  const response = await fetch(endpoint, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                          contents: currentChatHistoryForAPI,
+                          generationConfig: {
+                              temperature: 0.7,
+                              topK: 40,
+                              topP: 0.95,
+                              maxOutputTokens: 2048,
+                          }
+                      })
+                  });
+
+                  if (!response.ok) {
+                      const errorData = await response.json();
+                      console.error('Erro na API:', errorData);
+                      throw new Error(`Erro na API: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
+                  }
+
+                  const data = await response.json();
+                  botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta da API.';
+              }
 
               typingIndicator.classList.remove('active');
 
@@ -847,6 +904,8 @@
       // Simula uma chamada de backend para funcionalidades avançadas
       async function simulateBackendCall(feature, data) {
           console.log(`Simulando chamada de backend para ${feature} com dados:`, data);
+          // Em um ambiente real, você faria um fetch para seu WORKER_URL ou outro endpoint de backend
+          // const response = await fetch(`${WORKER_URL}/api/${feature}`, { method: 'POST', body: JSON.stringify(data) });
           // const result = await response.json();
           // return result.response;
 
@@ -1476,6 +1535,51 @@
         .guest-login-button:hover {
             background-color: #5a6268;
         }
+
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.9rem 0 0.35rem;
+            color: rgba(255,255,255,0.58);
+            font-size: 0.82rem;
+        }
+        .login-divider::before, .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+        }
+        .google-login-button {
+            width: 100%;
+            min-height: 2.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-top: 0.45rem;
+            padding: 0.65rem 0.9rem;
+            border: 1px solid rgba(255,255,255,0.28);
+            border-radius: var(--border-radius-sm);
+            background: #fff;
+            color: #303030;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background var(--transition-speed) ease;
+            box-shadow: var(--shadow);
+        }
+        .google-login-button:hover {
+            background: #f5f5f5;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .google-login-button:focus-visible {
+            outline: 3px solid rgba(255,215,0,0.7);
+            outline-offset: 2px;
+        }
+        .google-icon { width: 1.2rem; height: 1.2rem; flex: 0 0 auto; }
 
         .register-link {
             margin-top: 1.25rem; /* 2rem */
@@ -2531,6 +2635,11 @@
             </div>
 
             <button id="loginButton" class="login-button">Entrar</button>
+            <div class="login-divider"><span>ou</span></div>
+            <button id="googleLoginButton" class="google-login-button" type="button">
+                <svg class="google-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.45 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.62 5.91c4.45-4.11 7.14-10.16 7.14-17.56z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.53 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.79l-7.62-5.91c-2.12 1.42-4.84 2.26-8.28 2.26-6.26 0-11.55-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                <span>Continuar com Google</span>
+            </button>
             <button id="guestLoginButton" class="guest-login-button">Entrar como Visitante</button> <!-- NOVO BOTÃO -->
             <div class="register-link">
                 Não tem uma conta? <a href="#" id="showRegister">Registre-se</a>

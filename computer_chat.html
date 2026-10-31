@@ -507,9 +507,7 @@
           }
 
           try {
-              // Gemini é chamado pelo Cloudflare Worker; a chave fica como Secret no backend.
-              const endpoint = 'https://savebot.pedrogt998.workers.dev/api/generateContent';
-
+              const endpoint = '/api/generateContent';
               const currentChatHistoryForAPI = messages.map(msg => {
                   if (msg.role === 'user') {
                       let userParts = [{ text: msg.content }];
@@ -538,27 +536,29 @@
 
               const response = await fetch(endpoint, {
                   method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
+                  headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                      contents: [...currentChatHistoryForAPI], // A instrução do sistema foi removida daqui
+                      contents: currentChatHistoryForAPI,
+                      systemInstruction: {
+                          parts: [{
+                              text: 'Você é o SaveBot especializado em computadores, hardware, software, programação, redes e tecnologia. Responda com precisão, explique conceitos de forma didática e adapte o nível técnico ao usuário. Não invente especificações; quando faltarem dados, peça esclarecimentos.'
+                          }]
+                      },
                       generationConfig: {
                           temperature: 0.7,
                           topK: 40,
                           topP: 0.95,
-                          maxOutputTokens: 2048,
+                          maxOutputTokens: 2048
                       }
                   })
               });
 
+              const data = await response.json().catch(() => ({}));
               if (!response.ok) {
-                  const errorData = await response.json();
-                  console.error('Erro na API:', errorData);
-                  throw new Error(`Erro na API: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
+                  console.error('Erro no backend:', data);
+                  throw new Error(data.error || `Erro no servidor: ${response.status}`);
               }
 
-              const data = await response.json();
               const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta da API.';
 
               typingIndicator.classList.remove('active');

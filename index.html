@@ -56,9 +56,8 @@
       // TODO: TODO O SEU CÓDIGO JAVASCRIPT FOI MOVIDO PARA DENTRO DESTE BLOCO
       // Isso garante que todas as funções e instâncias do Firebase estejam disponíveis
       // antes que a lógica do seu aplicativo seja executada.
-
-      // Configuração do Worker (Conceitual - para backend)
-      const WORKER_URL = 'https://savebot.pedrogt998.workers.dev/'; // Usado para simular chamadas de backend
+      // Backend próprio hospedado no Render.
+      const API_ENDPOINT = '/api/generateContent';
       
       // Elementos DOM
       const loginContainer = document.getElementById('loginContainer');
@@ -760,7 +759,7 @@
 
           try {
               // Gemini é chamado pelo Cloudflare Worker; a chave fica como Secret no backend.
-              const endpoint = `${WORKER_URL}api/generateContent`;
+              const endpoint = API_ENDPOINT;
 
               // Preparar histórico para a API Gemini
               const currentChatHistoryForAPI = messages.map(msg => {
@@ -787,55 +786,25 @@
                   }
               });
 
-              // Simulação de processamento de funcionalidades avançadas via backend
-              let botResponse = '';
-              let handledByAdvancedFeature = false;
-
-              // 1. Calendário e Lembretes (Funcionalidade 1)
-              if (messageText.toLowerCase().includes('agendar') || messageText.toLowerCase().includes('lembrar')) {
-                  botResponse = await simulateBackendCall('calendar_reminder', { message: messageText, userProfile: userProfile }); // Usar userProfile
-                  handledByAdvancedFeature = true;
-              } 
-              // 3. Resumo e Análise de Documentos/Links (Funcionalidade 3)
-              else if (attachedMedia.length > 0 && attachedMedia.some(m => m.type.includes('pdf') || m.type.includes('word') || m.type.includes('text')) || messageText.toLowerCase().includes('resumir link')) {
-                  botResponse = await simulateBackendCall('document_analysis', { message: messageText, media: mediaContent, userProfile: userProfile }); // Usar userProfile
-                  handledByAdvancedFeature = true;
+              // Todas as mensagens passam pelo backend seguro do Render.
+              const response = await fetch(endpoint, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                      contents: currentChatHistoryForAPI,
+                      generationConfig: {
+                          temperature: 0.7,
+                          topK: 40,
+                          topP: 0.95,
+                          maxOutputTokens: 2048
+                      }
+                  })
+              });
+              const data = await response.json().catch(() => ({}));
+              if (!response.ok) {
+                  throw new Error(data.error || `Erro no servidor: ${response.status}`);
               }
-              // 4. Geração de Conteúdo Personalizado (Funcionalidade 4)
-              else if (messageText.toLowerCase().includes('escrever e-mail') || messageText.toLowerCase().includes('gerar post') || messageText.toLowerCase().includes('criar texto')) {
-                  botResponse = await simulateBackendCall('content_generation', { message: messageText, userProfile: userProfile }); // Usar userProfile
-                  handledByAdvancedFeature = true;
-              }
-              // 5. Aprendizado Contínuo e Personalização Profunda (Implícito na resposta)
-              // O backend usaria userProfile e histórico para adaptar a resposta.
-
-              if (!handledByAdvancedFeature) {
-                  // Chamada padrão para Gemini se nenhuma funcionalidade avançada for acionada
-                  const response = await fetch(endpoint, {
-                      method: 'POST',
-                      headers: {
-                          'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                          contents: currentChatHistoryForAPI,
-                          generationConfig: {
-                              temperature: 0.7,
-                              topK: 40,
-                              topP: 0.95,
-                              maxOutputTokens: 2048,
-                          }
-                      })
-                  });
-
-                  if (!response.ok) {
-                      const errorData = await response.json();
-                      console.error('Erro na API:', errorData);
-                      throw new Error(`Erro na API: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
-                  }
-
-                  const data = await response.json();
-                  botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta da API.';
-              }
+              const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta da API.';
 
               typingIndicator.classList.remove('active');
 
@@ -878,8 +847,6 @@
       // Simula uma chamada de backend para funcionalidades avançadas
       async function simulateBackendCall(feature, data) {
           console.log(`Simulando chamada de backend para ${feature} com dados:`, data);
-          // Em um ambiente real, você faria um fetch para seu WORKER_URL ou outro endpoint de backend
-          // const response = await fetch(`${WORKER_URL}/api/${feature}`, { method: 'POST', body: JSON.stringify(data) });
           // const result = await response.json();
           // return result.response;
 

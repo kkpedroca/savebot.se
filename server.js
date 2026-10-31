@@ -57,11 +57,17 @@ app.post("/api/generateContent", chatLimiter, async (req, res) => {
     );
     const result = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
-      console.error("Gemini API retornou status:", upstream.status);
-      return res.status(upstream.status >= 500 ? 502 : upstream.status).json({
-        error: result?.error?.message || "Não foi possível obter resposta da IA."
-      });
-    }
+  console.error("Gemini API - detalhes do erro:", {
+    httpStatus: upstream.status,
+    errorStatus: result?.error?.status,
+    errorCode: result?.error?.code,
+    errorMessage: result?.error?.message
+  });
+
+  return res.status(upstream.status >= 500 ? 502 : upstream.status).json({
+    error: result?.error?.message || "Não foi possível obter resposta da IA."
+  });
+}
     return res.json(result);
   } catch (error) {
     console.error("Erro ao processar solicitação:", error?.name || "Error");
